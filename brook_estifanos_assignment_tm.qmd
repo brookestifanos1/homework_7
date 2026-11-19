@@ -243,7 +243,7 @@ austen_bing_cloud <- austen_bing_filter |>
 
 ### Explanation 3: Bar charts side by side comparison
 
-I felt it would be cool to visually compare the three bar charts side to see the difference between the kinds of "joy words" matched with each lexicon so I used facet wrap to put them side by side.
+I felt it would be cool to visually compare the three bar charts side to see the difference between the kinds of "joy words" matched with each lexicon so I used facet wrap to put them side by side. It was fascinating that the words **happy** and **love** occupy spots in the top 3 in all three sentiment lexicons while each lexicon has its own number 1 "joy word".
 
 ```{r}
 #________________all bars in 1 go_______________
