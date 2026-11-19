@@ -240,3 +240,44 @@ austen_bing_cloud <- austen_bing_filter |>
     colors = brewer.pal(8, "Dark2")
   ))
 ```
+
+### Explanation 3: Bar charts side by side comparison
+
+I felt it would be cool to visually compare the three bar charts side to see the difference between the kinds of "joy words" matched with each lexicon so I used facet wrap to put them side by side.
+
+```{r}
+#________________all bars in 1 go_______________
+
+
+# 1. Combine all three lexicons into one lookup table
+all_joy_lexicons <- bind_rows(
+  nrc_joy   |> select(word) |> mutate(lexicon = "NRC"),
+  affin_joy |> select(word) |> mutate(lexicon = "AFINN"),
+  bing_joy  |> select(word) |> mutate(lexicon = "Bing")
+)
+
+# 2. Count word frequency and filter (n >= 50) across all lexicons at once
+austen_all_filter <- austen_2 |>
+  filter(book == "Emma") |>
+  inner_join(all_joy_lexicons, by = "word", relationship = "many-to-many") |>
+  count(lexicon, word, sort = TRUE) |>
+  filter(n > 50) 
+
+# 3a. Combined bar chart using facet_wrap
+austen_all_bar <- austen_all_filter |>
+  mutate(word = reorder_within(word, n, lexicon)) |>
+  ggplot(aes(x = n, y = word, fill = lexicon)) +
+  geom_col(colour = "black", show.legend = FALSE) +
+  facet_wrap(~ lexicon, scales = "free_y") +
+  scale_y_reordered() +
+  scale_fill_manual(values = c("NRC" = "steelblue", "AFINN" = "orange", "Bing" = "purple")) +
+  labs(
+    y = NULL,
+    x = "Word Frequency",
+    title = "Frequent Joy/Positive Words in Emma by Sentiment Lexicon (n > 50)"
+  ) +
+  theme_minimal()
+
+austen_all_bar
+
+```
