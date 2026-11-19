@@ -5,3 +5,25 @@ format:
     embed-resources: true
 editor: visual
 ---
+
+```{r}
+#| warning: false
+#| message: false
+#| include: false
+
+if (!require("pacman")) install.packages("pacman")
+
+pacman::p_load(
+  tidyverse,    # dplyr, tidyr, stringr, ggplot2, tibble, readr
+  tidytext,     # unnest_tokens(), stop_words, get_sentiments(), bind_tf_idf()
+  textdata,     # downloads the AFINN and NRC sentiment lexicons
+  janeaustenr,  # the six Jane Austen novels
+  gutenbergr,   # downloads books from Project Gutenberg
+  scales,       # percent axis labels
+  wordcloud,    # word clouds
+  reshape2,     # acast(), needed for comparison clouds
+  tm,           # corpus and term-document matrix tools
+  RColorBrewer, # colour palettes
+  rvest         # reads HTML files (Part 8)
+)
+```
