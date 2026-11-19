@@ -90,3 +90,77 @@ nrow(austen_2)
 
 length(unique(austen_2$word))
 ```
+
+## Task 3: Sentiment Analysis
+
+### Explanation 1: Lexicon Filter
+
+I used `dplyr`\`s to filter joy words from the three sentiemnt lexicons with their corresponding string arguments `nrc` (joy), `afinn` (positive scores ≥ 1), `bing` (positive)
+
+```{r}
+
+#nrc (argument joy)
+nrc_joy <- get_sentiments("nrc") |> 
+  filter(sentiment == "joy")
+nrc_joy
+
+#afinn ( argument positive scores ≥ 1)
+affin_joy <- get_sentiments("afinn") |> 
+  filter(value >= 1)
+affin_joy
+
+#bing (argument positive)
+bing_joy <- get_sentiments("bing") |> 
+  filter(sentiment == "positive")
+bing_joy
+```
+
+### Explanation 2: Analysis and Visualization
+
+For each of the filtered lexicons I followed the steps below complete this step.
+
+1.  Count word frequency by filtering for the book EMMA, inner joining with the appropriate "joy filtered" sentiment lexicon and counting the resulting word frequency.
+
+2.  Filtering for the top 50 words.
+
+3.  Visualizing by creating a **barchart** with `ggplot`'s `geom_col`, [reordered by frequency]{.underline} and a **word cloud** using the `wordcloud()` package.
+
+The analysis for each sentiment lexicon is below.
+
+#### NRC
+
+```{r}
+
+#________nrc join_____________
+
+#1. Count word frequency  
+austen_nrc_freq <- austen_2 |>
+  filter(book == "Emma") |>
+  inner_join(nrc_joy, by = "word",
+             relationship = "many-to-many") |>
+  count(word, sort = TRUE) 
+austen_nrc_freq
+
+#2 Filter for frequently occurring words (n > 50)
+austen_nrc_filter <- austen_nrc_freq |> 
+  filter(n > 50)
+austen_nrc_filter
+
+#3a Visualize using a bar chart (ggplot2).
+
+austen_nrc_bar <- austen_nrc_filter  |> 
+  mutate(word = reorder(word, n)) |> 
+  ggplot(aes(x = n, y = word)) +
+  geom_col(fill = "steelblue", colour = "black") +
+  labs(y = NULL, x = "Word Frequency", title = "Top 50 Joy words in Emma by Jane Austen using nrc ")
+austen_nrc_bar
+
+#3b Visualize using a word cloud (wordcloud).
+austen_nrc_cloud <- austen_nrc_filter |> 
+  with(wordcloud(
+    words = word, 
+    freq = n, 
+    random.order = FALSE, 
+    colors = brewer.pal(8, "Dark2")
+  ))
+```
