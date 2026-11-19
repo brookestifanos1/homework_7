@@ -27,3 +27,38 @@ pacman::p_load(
   rvest         # reads HTML files (Part 8)
 )
 ```
+
+# Exploring Joyful Language in Jane Austen’s *Emma* using Tidytext
+
+## Task 1: Data Preparation
+
+### Explanation
+
+I used the notes provided in class to group `austen_books` by book, detect chapter boundaries using `regex` and create two new columns **linenumber** and **chapter** using `dplyr` mutate function. I then checked if the work is correct by getting a summary of the number of chapters in each book and comparing it tho the known number of chapters.
+
+```{r}
+
+library(janeaustenr)
+
+#1._____Group, detect chpater boundries using regex, create new columns_____
+
+austen_1 <- austen_books() |>
+  #makes row_number() restart at 1 for every novel
+  group_by(book) |> 
+  # creates columens line number and chapter
+  mutate(
+    linenumber = row_number(),
+    #Matches "chapter " + digit or Roman numeral (i,v,x,l,c)
+    #cum_sum adds up the TRUE values
+    chapter    = cumsum(str_detect(text,
+                                   regex("^chapter [\\divxlc]", 
+                                         ignore_case = TRUE)))
+  )  
+austen_1
+
+#2._______chapter check_________
+
+austen_1_check <- austen_1 |> 
+  summarise(chapters = max(chapter))
+austen_1_check
+```
