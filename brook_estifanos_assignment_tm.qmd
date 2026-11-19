@@ -165,7 +165,7 @@ austen_nrc_cloud <- austen_nrc_filter |>
   ))
 ```
 
-#### Affin
+#### AFFIN
 
 ```{r}
 #________affin join____________
@@ -195,6 +195,44 @@ austen_affin_bar
 
 #3b Visualize using a word cloud (wordcloud).
 austen_affin_cloud <- austen_affin_filter |> 
+  with(wordcloud(
+    words = word, 
+    freq = n, 
+    random.order = FALSE, 
+    colors = brewer.pal(8, "Dark2")
+  ))
+```
+
+#### BING
+
+```{r}
+#________bing join____________
+
+
+#1. Count word frequency  
+austen_bing_freq <- austen_2 |>
+  filter(book == "Emma") |>
+  inner_join(bing_joy, by = "word",
+             relationship = "many-to-many") |>
+  count(word, sort = TRUE) 
+austen_bing_freq
+
+#2 Filter for frequently occurring words (n > 50)
+austen_bing_filter <- austen_bing_freq |> 
+  filter(n > 50)
+austen_bing_filter
+
+#3a Visualize using a bar chart (ggplot2).
+
+austen_bing_bar <- austen_bing_filter  |> 
+  mutate(word = reorder(word, n)) |> 
+  ggplot(aes(x = n, y = word)) +
+  geom_col(fill = "purple", colour = "black") +
+  labs(y = NULL, x = "Word Frequency", title = "Top 50 Joy words in Emma by Jane Austen using bing ")
+austen_bing_bar
+
+#3b Visualize using a word cloud (wordcloud).
+austen_bing_cloud <- austen_bing_filter |> 
   with(wordcloud(
     words = word, 
     freq = n, 
