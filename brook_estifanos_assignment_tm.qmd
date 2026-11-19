@@ -1,0 +1,7 @@
+---
+title: "Brook Estifanos Assignment 6 Text Mining"
+format:
+  html:
+    embed-resources: true
+editor: visual
+---
