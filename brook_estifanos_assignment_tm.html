@@ -2233,7 +2233,7 @@ vertical-align: -.125em;
 <h2 class="anchored" data-anchor-id="task-1-data-preparation">Task 1: Data Preparation</h2>
 <section id="explanation" class="level3">
 <h3 class="anchored" data-anchor-id="explanation">Explanation</h3>
-<p>I used the notes provided in class to group <code>austen_books</code> by book, detect chapter boundaries using <code>regex</code> and create two new columns <strong>linenumber</strong> and <strong>chapter</strong> using <code>dplyr</code> mutate function. I then checked if the work is correct by getting a summary of the number of chapters in each book and comparing it tho the known number of chapters.</p>
+<p>I used the notes provided in class to group <code>austen_books</code> by book, detect chapter boundaries using <code>regex</code> and create two new columns <strong>linenumber</strong> and <strong>chapter</strong> using <code>dplyr</code> ’s <code>mutate</code> function. I then checked if the work is correct by getting a summary of the number of chapters in each book and comparing it tho the known number of chapters. I felt that the ungroup() was unnecessary in this session because i create a new object based on the</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(janeaustenr)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
@@ -2249,12 +2249,12 @@ vertical-align: -.125em;
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    <span class="co">#cum_sum adds up the TRUE values</span></span>
 <span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">chapter    =</span> <span class="fu">cumsum</span>(<span class="fu">str_detect</span>(text,</span>
 <span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>                                   <span class="fu">regex</span>(<span class="st">&quot;^chapter [</span><span class="sc">\\</span><span class="st">divxlc]&quot;</span>, </span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">ignore_case =</span> <span class="cn">TRUE</span>)))</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  )  </span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>austen_1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">ignore_case =</span> <span class="cn">TRUE</span>))) </span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>  )<span class="sc">|&gt;</span> </span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ungroup</span>()  </span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>austen_1</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 73,422 × 4
-# Groups:   book [6]
    text                    book                linenumber chapter
    &lt;chr&gt;                   &lt;fct&gt;                    &lt;int&gt;   &lt;int&gt;
  1 &quot;SENSE AND SENSIBILITY&quot; Sense &amp; Sensibility          1       0
@@ -2272,8 +2272,10 @@ vertical-align: -.125em;
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#2._______chapter check_________</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>austen_1_check <span class="ot">&lt;-</span> austen_1 <span class="sc">|&gt;</span> </span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">chapters =</span> <span class="fu">max</span>(chapter))</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>austen_1_check</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">group_by</span>(book) <span class="sc">|&gt;</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">summarise</span>(<span class="at">chapters =</span> <span class="fu">max</span>(chapter)) <span class="sc">|&gt;</span> </span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">ungroup</span>()</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>austen_1_check</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell-output cell-output-stdout">
 <pre><code># A tibble: 6 × 2
   book                chapters
@@ -2284,6 +2286,50 @@ vertical-align: -.125em;
 4 Emma                      55
 5 Northanger Abbey          31
 6 Persuasion                24</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="task-2-tokenization" class="level2">
+<h2 class="anchored" data-anchor-id="task-2-tokenization">Task 2: Tokenization</h2>
+<section id="explanation-1" class="level3">
+<h3 class="anchored" data-anchor-id="explanation-1">Explanation</h3>
+<p>I utilized <code>unnest_tokens()</code> function from the <code>tidytext</code> package to tokenize by word. I <code>dplyr</code>’s mutate along with <code>strngr</code>s <code>str_extract</code> to create a new column for the words. Finally, <code>dplyr</code>’s <code>anti-join</code> was used to weed out low value words by comparing the text to <code>tidytext</code>’s <code>stop_words</code> dataframe. Without the stop_words there were <strong>216385 total words</strong> and <strong>13464 unique</strong> ones<strong>.</strong></p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co">#1.___________Tokenize words using unnest__________</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>austen_2 <span class="ot">&lt;-</span> austen_1 <span class="sc">|&gt;</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">unnest_tokens</span>(word, text) <span class="sc">|&gt;</span> </span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># use str_extract to get just the words inside any format encoding</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">word =</span> <span class="fu">str_extract</span>(word, <span class="st">&quot;[a-z&#39;]+&quot;</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>  <span class="co"># filter out words in stop_words</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">anti_join</span>(stop_words, <span class="at">by =</span> <span class="st">&quot;word&quot;</span>)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>austen_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 216,385 × 4
+   book                linenumber chapter word       
+   &lt;fct&gt;                    &lt;int&gt;   &lt;int&gt; &lt;chr&gt;      
+ 1 Sense &amp; Sensibility          1       0 sense      
+ 2 Sense &amp; Sensibility          1       0 sensibility
+ 3 Sense &amp; Sensibility          3       0 jane       
+ 4 Sense &amp; Sensibility          3       0 austen     
+ 5 Sense &amp; Sensibility          5       0 &lt;NA&gt;       
+ 6 Sense &amp; Sensibility         10       1 chapter    
+ 7 Sense &amp; Sensibility         10       1 &lt;NA&gt;       
+ 8 Sense &amp; Sensibility         13       1 family     
+ 9 Sense &amp; Sensibility         13       1 dashwood   
+10 Sense &amp; Sensibility         13       1 settled    
+# ℹ 216,375 more rows</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#2.________Token check__________</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="fu">nrow</span>(austen_2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 216385</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">length</span>(<span class="fu">unique</span>(austen_2<span class="sc">$</span>word))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 13464</code></pre>
 </div>
 </div>
 </section>

@@ -34,7 +34,7 @@ pacman::p_load(
 
 ### Explanation
 
-I used the notes provided in class to group `austen_books` by book, detect chapter boundaries using `regex` and create two new columns **linenumber** and **chapter** using `dplyr` mutate function. I then checked if the work is correct by getting a summary of the number of chapters in each book and comparing it tho the known number of chapters.
+I used the notes provided in class to group `austen_books` by book, detect chapter boundaries using `regex` and create two new columns **linenumber** and **chapter** using `dplyr` 's `mutate` function. I then checked if the work is correct by getting a summary of the number of chapters in each book and comparing it tho the known number of chapters. I felt that the ungroup() was unnecessary in this session because i create a new object based on the
 
 ```{r}
 
@@ -52,13 +52,41 @@ austen_1 <- austen_books() |>
     #cum_sum adds up the TRUE values
     chapter    = cumsum(str_detect(text,
                                    regex("^chapter [\\divxlc]", 
-                                         ignore_case = TRUE)))
-  )  
+                                         ignore_case = TRUE))) 
+  )|> 
+  ungroup()  
 austen_1
 
 #2._______chapter check_________
 
 austen_1_check <- austen_1 |> 
-  summarise(chapters = max(chapter))
+                    group_by(book) |>
+                    summarise(chapters = max(chapter)) |> 
+                    ungroup()
 austen_1_check
+```
+
+## Task 2: Tokenization
+
+### Explanation
+
+I utilized `unnest_tokens()` function from the `tidytext` package to tokenize by word. I `dplyr`'s mutate along with `strngr`s `str_extract` to create a new column for the words. Finally, `dplyr`'s `anti-join` was used to weed out low value words by comparing the text to `tidytext`'s `stop_words` dataframe. Without the stop_words there were **216385 total words** and **13464 unique** ones**.**
+
+```{r}
+
+#1.___________Tokenize words using unnest__________
+
+austen_2 <- austen_1 |>
+  unnest_tokens(word, text) |> 
+  # use str_extract to get just the words inside any format encoding
+  mutate(word = str_extract(word, "[a-z']+")) |>
+  # filter out words in stop_words
+  anti_join(stop_words, by = "word")
+austen_2
+
+#2.________Token check__________
+
+nrow(austen_2)
+
+length(unique(austen_2$word))
 ```
